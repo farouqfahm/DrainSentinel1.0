@@ -488,9 +488,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Contact
 
-- **Project Lead:** DrainSentinel Team
-- **Email:** contact@drainsentinel.io
-- **GitHub:** https://github.com/yourusername/DrainSentinel
+- **Project Lead:** ClimatrixAI Team
+- **Email:** founders@climatrixai.com
+- **GitHub:** https://github.com/farouqfahm/DrainSentinel1.0
 - **Edge Impulse Project:** https://studio.edgeimpulse.com/public/drainsentinel
 
 ---
