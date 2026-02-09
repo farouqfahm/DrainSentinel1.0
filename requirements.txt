@@ -1,0 +1,26 @@
+# DrainSentinel Python Dependencies
+# Install with: pip3 install -r requirements.txt
+
+# Web Framework
+flask>=2.0.0
+flask-socketio>=5.0.0
+
+# Computer Vision
+opencv-python>=4.5.0
+numpy>=1.20.0
+Pillow>=9.0.0
+
+# Serial Communication (Arduino)
+pyserial>=3.5
+
+# HTTP Requests (for alerts and relay control)
+requests>=2.25.0
+
+# Environment Configuration
+python-dotenv>=0.19.0
+
+# Optional: SMS Alerts via Twilio
+# twilio>=7.0.0
+
+# Note: Edge Impulse SDK is installed separately
+# npm install -g edge-impulse-linux

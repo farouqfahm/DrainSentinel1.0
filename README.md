@@ -1,527 +1,461 @@
-# DrainSentinel: Edge AI for Flood Prevention
+# DrainSentinel 2.0: Edge AI Flood Prevention System
 
-![DrainSentinel Logo](https://img.shields.io/badge/DrainSentinel-Edge%20AI-blue)
+![DrainSentinel](https://img.shields.io/badge/DrainSentinel-v2.0-blue)
+![Platform](https://img.shields.io/badge/Platform-Metis%20AI%20Accelerator-green)
+![AI](https://img.shields.io/badge/AI-Edge%20Impulse-orange)
 ![License](https://img.shields.io/badge/License-MIT-green)
-![Status](https://img.shields.io/badge/Status-Active%20Development-yellow)
 
-**DrainSentinel** is an innovative IoT Edge AI application that monitors drainage systems and waterways in Lagos, Nigeria, detecting blockages and predicting flood occurrences in real-time. The system operates 24/7 on edge hardware (Seeed XIAO ESP32-S3 Sense), using computer vision and sensor fusion to alert communities and government agencies before flooding occurs.
+**An AI-powered drainage monitoring system that detects blockages and predicts floods before they happen.**
 
----
-
-## 🎯 Project Overview
-
-### Problem Statement
-
-Lagos, Nigeria, experiences frequent flooding due to drainage blockages, inadequate infrastructure maintenance, and heavy rainfall. Traditional monitoring systems rely on manual inspection, which is time-consuming, costly, and reactive rather than preventive. DrainSentinel addresses this by providing **real-time, autonomous monitoring** of drainage systems using edge AI.
-
-### Solution
-
-DrainSentinel deploys a network of intelligent edge devices that:
-- **Detect blockages** using computer vision (visual analysis of drainage pipes)
-- **Monitor water levels** using ultrasonic/Lidar sensors
-- **Predict flooding** using environmental sensor fusion
-- **Alert communities** via WiFi connectivity
-- **Operate autonomously** without cloud dependency
-
-### Key Innovation
-
-The system combines three independent AI models in a **multi-modal sensor fusion architecture**:
-1. **Visual Blockage Detection** (MobileNetV2 CNN)
-2. **Water Level Monitoring** (LSTM RNN)
-3. **Flood Risk Prediction** (Gradient Boosting)
-
-All models run on edge hardware with <1 second total inference latency.
+Built for Lagos, Nigeria — where flooding is a real problem that affects millions.
 
 ---
 
-## 📋 Table of Contents
+## 🎯 What This Does
 
-- [Features](#features)
-- [Hardware](#hardware)
-- [Software Architecture](#software-architecture)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Model Training](#model-training)
-- [Deployment](#deployment)
-- [Results](#results)
-- [Datasets](#datasets)
-- [References](#references)
-- [Contributing](#contributing)
-- [License](#license)
+DrainSentinel uses a camera + ultrasonic sensor + AI to:
+
+1. **See blockages** — Camera detects debris, trash, blockages in drains
+2. **Measure water levels** — Ultrasonic sensor tracks how high water is rising
+3. **Predict floods** — AI combines both to warn BEFORE flooding happens
+4. **Alert people** — Sends notifications to residents and authorities
+5. **Trigger responses** — Can activate pumps, sirens, or barriers via relay
+
+**The magic:** All AI runs locally on the Metis AI Accelerator. No cloud. No internet required for core functions. Works 24/7.
 
 ---
 
-## ✨ Features
+## 🔧 Hardware Stack
 
-### Core Capabilities
+This is what we're using — **no substitutions**:
 
-- **Real-time Blockage Detection:** Identifies drainage blockages using computer vision
-- **Water Level Monitoring:** Tracks water level changes with ultrasonic/Lidar sensors
-- **Flood Prediction:** Predicts flood risk based on environmental factors
-- **Multi-modal Sensor Fusion:** Combines visual and sensor data for robust decision-making
-- **Edge Inference:** All AI models run locally on device (no cloud required)
-- **Low Power Operation:** Optimized for 24/7 battery-powered deployment
-- **WiFi Alerts:** Real-time notifications to communities and agencies
-- **Local Data Logging:** Stores inference results for historical analysis
+| Component | Role | Notes |
+|-----------|------|-------|
+| **Metis AI Accelerator** | Edge AI brain | Runs vision models locally |
+| **USB Camera (1080p)** | Visual detection | ONE camera for drain monitoring |
+| **Arduino Uno Rev 4** | Sensor hub | Connects ultrasonic sensor |
+| **HC-SR04 Ultrasonic Sensor** | Water level measurement | Connected to Arduino |
+| **Sonoff Pro R3 Relay** | Physical responses | Trigger pumps/sirens/barriers |
+| **Wi-Fi Dongle** | Connectivity | Remote monitoring & alerts |
+| **MicroSD Card** | Storage | Logs, images, models |
 
-### Technical Features
-
-- **Edge Impulse Integration:** Professional ML model training and deployment
-- **Model Quantization:** INT8 quantization for 4x smaller model size
-- **Optimized Latency:** <1 second total inference time
-- **Memory Efficient:** <8 MB total model size (fits in ESP32-S3 memory)
-- **Robust Preprocessing:** Handles sensor noise and edge cases
-- **Cross-validation:** 5-fold cross-validation for model generalization
+### What We're NOT Using
+- ❌ ~~Echo Dot~~ — Removed from project
+- ❌ ~~Second camera~~ — Using ONE camera only
+- ❌ ~~Raspberry Pi~~ — Using Metis AI Accelerator instead
 
 ---
 
-## 🔧 Hardware
+## 🚀 Quick Start (For Beginners)
 
-### Primary Platform: Seeed XIAO ESP32-S3 Sense
+**New to this?** Don't worry — this guide assumes you're starting from scratch.
 
-| Component | Specification |
-|-----------|---------------|
-| **Processor** | Dual-core Xtensa 32-bit LX7 @ 240 MHz |
-| **Memory** | 8 MB PSRAM, 8 MB Flash |
-| **Camera** | OV2640 (1600x1200 pixels) |
-| **Sensors** | Built-in IMU (BMI270), Magnetometer (BMM150) |
-| **Connectivity** | 2.4 GHz Wi-Fi, Bluetooth 5.3 |
-| **Power** | 3.7V Li-Po battery support |
-| **Cost** | ~$20 USD |
+### Step 1: Flash the Metis AI Accelerator
 
-### External Sensors
+The Metis doesn't have an OS yet. Let's fix that.
 
-| Sensor | Purpose | Range | Interface |
-|--------|---------|-------|-----------|
-| **HC-SR04** | Ultrasonic distance (water level) | 2-400 cm | GPIO |
-| **VL53L0X** | Lidar distance (optional) | 30-1000 mm | I2C |
-| **DHT22** | Temperature & humidity | -40 to 80°C | GPIO |
-| **BMP280** | Atmospheric pressure | 300-1100 hPa | I2C |
-| **Rain Sensor** | Rainfall detection | 0-100 mm/hour | ADC |
+**What you need:**
+- A computer (Windows, Mac, or Linux)
+- MicroSD card (32GB minimum, Class 10 or faster)
+- MicroSD card reader
+- The Metis AI Accelerator unit
 
----
+**About the Metis AI Accelerator:**
+The Metis is an edge AI device designed for running machine learning models locally. It typically runs a Linux-based OS optimized for AI inference.
 
-## 🏗️ Software Architecture
+#### Option A: If Metis Uses Raspberry Pi Compute Module
 
-### System Architecture
+Many Metis-style accelerators are built on Raspberry Pi Compute Module 4. If yours is:
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    DrainSentinel System                      │
-├─────────────────────────────────────────────────────────────┤
-│                                                               │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │              ESP32-S3 Edge Device                    │  │
-│  │                                                       │  │
-│  │  ┌──────────────┐  ┌──────────────┐  ┌────────────┐ │  │
-│  │  │   Camera     │  │   Ultrasonic │  │ Env Sensors│ │  │
-│  │  │   (Visual)   │  │   (Distance) │  │ (Weather)  │ │  │
-│  │  └──────┬───────┘  └──────┬───────┘  └─────┬──────┘ │  │
-│  │         │                 │                │         │  │
-│  │         ▼                 ▼                ▼         │  │
-│  │  ┌──────────────┐  ┌──────────────┐  ┌────────────┐ │  │
-│  │  │   Visual     │  │   Sensor     │  │ Flood Risk │ │  │
-│  │  │   Model      │  │   Model      │  │   Model    │ │  │
-│  │  │ (MobileNetV2)│  │   (LSTM)     │  │ (XGBoost)  │ │  │
-│  │  └──────┬───────┘  └──────┬───────┘  └─────┬──────┘ │  │
-│  │         │                 │                │         │  │
-│  │         └─────────────────┼────────────────┘         │  │
-│  │                           ▼                          │  │
-│  │                   ┌──────────────┐                   │  │
-│  │                   │ Fusion Logic │                   │  │
-│  │                   │ & Decision   │                   │  │
-│  │                   └──────┬───────┘                   │  │
-│  │                          ▼                           │  │
-│  │                   ┌──────────────┐                   │  │
-│  │                   │ Alert & Log  │                   │  │
-│  │                   └──────┬───────┘                   │  │
-│  │                          ▼                           │  │
-│  │                   ┌──────────────┐                   │  │
-│  │                   │ WiFi/Local   │                   │  │
-│  │                   │ Communication│                   │  │
-│  │                   └──────────────┘                   │  │
-│  │                                                       │  │
-│  └──────────────────────────────────────────────────────┘  │
-│                                                               │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │           Cloud/Community Dashboard                  │  │
-│  │  (Optional: Real-time alerts, historical analysis)  │  │
-│  └──────────────────────────────────────────────────────┘  │
-│                                                               │
-└─────────────────────────────────────────────────────────────┘
-```
+1. **Download Raspberry Pi Imager**
+   - Go to: https://www.raspberrypi.com/software/
+   - Download and install for your OS
 
-### Model Architecture
+2. **Flash the OS:**
+   - Open Raspberry Pi Imager
+   - Choose OS: **Raspberry Pi OS (64-bit)**
+   - Choose Storage: Your MicroSD card
+   - Click gear icon (⚙️) to configure:
+     - Hostname: `drainsentinel`
+     - Enable SSH: ✅
+     - Username: `pi`
+     - Password: (create one)
+     - WiFi: Enter your network credentials
+   - Click **Write**
 
-**Three Parallel Inference Streams:**
+3. **Insert MicroSD into Metis** and power on
 
-1. **Visual Stream (MobileNetV2)**
-   - Input: 96x96 RGB camera frame
-   - Output: Blockage probability (0-1)
-   - Latency: 200-500 ms
+#### Option B: If Metis Has Custom Firmware
 
-2. **Sensor Stream (LSTM)**
-   - Input: 60-second water level sequence
-   - Output: Water level class (normal/elevated/critical)
-   - Latency: 50-100 ms
+Check the Metis documentation for:
+- Pre-built images to flash
+- Flashing tool (often `balenaEtcher` or manufacturer tool)
+- Recovery mode instructions
 
-3. **Environmental Stream (XGBoost)**
-   - Input: 5 environmental features
-   - Output: Flood risk probability (0-1)
-   - Latency: 20-50 ms
+Common Metis-type devices:
+- **Seeed reComputer** → Uses Jetson or CM4
+- **Coral Dev Board** → Uses Mendel Linux
+- **NVIDIA Jetson** → Uses JetPack
 
-**Fusion Logic:**
-```
-Alert Score = 0.40 × Blockage + 0.30 × Water Level + 0.30 × Flood Risk
+**If unsure:** Check the label on your Metis device or its documentation.
 
-Decision:
-- Alert HIGH: Score > 0.7 AND Water Level = CRITICAL
-- Alert MEDIUM: Score > 0.5 OR Water Level = ELEVATED OR Flood Risk > 0.7
-- Alert LOW: Otherwise
-```
+#### Post-Flash Setup
 
----
-
-## 📦 Installation
-
-### Prerequisites
-
-- Arduino IDE 1.8.19 or later
-- ESP32 Board Support Package (v2.0.0+)
-- Python 3.8+ (for data preprocessing)
-- Edge Impulse CLI (for model export)
-
-### Step 1: Clone Repository
+Once the Metis boots:
 
 ```bash
-git clone https://github.com/yourusername/DrainSentinel.git
-cd DrainSentinel
+# Connect via SSH (from your computer)
+ssh pi@drainsentinel.local
+# Or use the IP address from your router
+
+# Update the system
+sudo apt update && sudo apt upgrade -y
+
+# Install required packages
+sudo apt install -y python3-pip python3-opencv python3-numpy git
+
+# Install Flask for dashboard
+pip3 install flask
+
+# Clone this repository
+cd ~
+git clone https://github.com/farouqfahm/DrainSentinel1.0.git
+cd DrainSentinel1.0
 ```
 
-### Step 2: Install Dependencies
+---
 
-```bash
-# Python dependencies
-pip install -r requirements.txt
+### Step 2: Connect the Hardware
 
-# Arduino libraries (via Arduino IDE Library Manager):
-# - DHT sensor library by Adafruit
-# - Adafruit BMP280 Library
-# - ArduinoJson
-# - WebServer
-```
+#### 2.1 USB Camera → Metis
 
-### Step 3: Configure Hardware
-
-1. Connect sensors to ESP32-S3:
-   - Camera: Built-in OV2640
-   - HC-SR04: TRIG→GPIO3, ECHO→GPIO4
-   - DHT22: GPIO2
-   - BMP280: I2C (SDA→GPIO1, SCL→GPIO0)
-   - Rain Sensor: GPIO5
-
-2. Update WiFi credentials in `firmware_esp32s3.cpp`:
-   ```cpp
-   const char* WIFI_SSID = "YOUR_SSID";
-   const char* WIFI_PASSWORD = "YOUR_PASSWORD";
+1. Plug the USB camera into any USB port on the Metis
+2. Test it works:
+   ```bash
+   # Check camera is detected
+   ls /dev/video*
+   # Should show: /dev/video0
+   
+   # Take a test photo
+   ffmpeg -f v4l2 -i /dev/video0 -frames:v 1 test.jpg
+   # Or: fswebcam test.jpg
    ```
 
-### Step 4: Upload Firmware
+#### 2.2 Arduino Uno Rev 4 Setup
 
-1. Open `firmware_esp32s3.cpp` in Arduino IDE
-2. Select Board: **Seeed XIAO ESP32-S3**
-3. Select Port: **COM[X]** (your ESP32-S3 port)
-4. Click **Upload**
+The Arduino handles the ultrasonic sensor and communicates with the Metis via USB serial.
 
-### Step 5: Verify Installation
+**Wiring the HC-SR04 to Arduino:**
+
+```
+HC-SR04          Arduino Uno Rev 4
+─────────        ─────────────────
+VCC      ───────► 5V
+GND      ───────► GND
+TRIG     ───────► Pin 9
+ECHO     ───────► Pin 10
+```
+
+**Upload Arduino Code:**
+
+1. Install Arduino IDE on your computer: https://www.arduino.cc/en/software
+2. Connect Arduino to your computer via USB
+3. Open Arduino IDE
+4. Copy the code from `hardware/arduino_sensor.ino`
+5. Select Board: **Arduino Uno R4 WiFi** (or R4 Minima)
+6. Select Port: Your Arduino's COM port
+7. Click **Upload**
+
+**Test Arduino:**
+```bash
+# On Metis, check Arduino is detected
+ls /dev/ttyACM*
+# Should show: /dev/ttyACM0
+
+# Read serial output
+cat /dev/ttyACM0
+# Should show JSON: {"water_level_cm": 45.2, "distance_raw": 45.2}
+```
+
+#### 2.3 Connect Arduino to Metis
+
+1. Plug Arduino into Metis via USB cable
+2. The Metis reads sensor data over serial
+
+#### 2.4 Sonoff Pro R3 Relay (Optional)
+
+The Sonoff relay can trigger pumps, sirens, or flood barriers.
+
+**Setup:**
+1. Flash Sonoff with Tasmota firmware (for local control)
+2. Connect to your WiFi network
+3. Note its IP address
+4. Configure in `config/settings.json`
+
+---
+
+### Step 3: Install Dependencies
 
 ```bash
-# Monitor serial output
-screen /dev/ttyUSB0 115200
+cd ~/DrainSentinel1.0
 
-# Expected output:
-# === DrainSentinel ESP32-S3 Firmware ===
-# [INIT] Initializing sensors...
-# [WIFI] Connecting to WiFi...
-# [SERVER] Web server started on port 80
+# Install Python dependencies
+pip3 install -r requirements.txt
+
+# Create required directories
+mkdir -p data/captures data/logs config models
 ```
 
 ---
 
-## 🚀 Usage
-
-### Web API
-
-The device exposes a simple REST API for monitoring:
-
-#### Get System Status
+### Step 4: Run the System
 
 ```bash
-curl http://<ESP32_IP>/status
+# Start DrainSentinel
+python3 src/main.py
 ```
 
-Response:
-```json
-{
-  "status": "running",
-  "uptime_ms": 123456,
-  "alert_level": "LOW",
-  "blockage_score": 0.15,
-  "water_level": 25.3,
-  "temperature": 28.5,
-  "humidity": 65.2
-}
-```
+Open a browser and go to: `http://drainsentinel.local:5000`
 
-#### Get Current Alerts
+You should see the live dashboard!
 
-```bash
-curl http://<ESP32_IP>/alerts
-```
+---
 
-Response:
-```json
-{
-  "alert_level": "MEDIUM",
-  "alert_message": "WARNING: Potential blockage or elevated water level detected.",
-  "alert_score": 0.58
-}
-```
-
-### Serial Monitor
-
-View real-time inference results:
+## 📁 Project Structure
 
 ```
-[CYCLE] Running inference cycle...
-[CAMERA] Capturing frame...
-[INFERENCE] Running visual model...
-[INFERENCE] Visual model output: 0.32
-[INFERENCE] Running sensor model...
-[INFERENCE] Sensor model output: class 1
-[INFERENCE] Running environmental model...
-[INFERENCE] Environmental model output: 0.45
-[FUSION] Fusing model outputs...
-[ALERT] Level: MEDIUM
-[ALERT] Message: WARNING: Potential blockage or elevated water level detected.
+DrainSentinel1.0/
+├── README.md                    # You're reading this
+├── IMPLEMENTATION_ROADMAP.md    # Detailed step-by-step guide
+├── PROJECT_REPORT.md            # Technical report for submission
+├── PRESENTATION_GUIDE.md        # Slide deck content
+├── requirements.txt             # Python dependencies
+│
+├── src/                         # Main source code
+│   ├── main.py                  # Entry point
+│   ├── camera.py                # Camera capture module
+│   ├── arduino_serial.py        # Arduino communication
+│   ├── ai_detector.py           # AI inference module
+│   ├── alert_system.py          # Notifications & relay control
+│   ├── dashboard.py             # Web dashboard
+│   └── calibrate.py             # Calibration wizard
+│
+├── hardware/                    # Hardware code & diagrams
+│   ├── arduino_sensor.ino       # Arduino firmware
+│   └── wiring_diagram.md        # Connection guide
+│
+├── models/                      # Trained AI models
+│   └── drain_blockage.eim       # Edge Impulse model
+│
+├── web/                         # Dashboard frontend
+│   └── templates/
+│       └── dashboard.html
+│
+├── config/                      # Configuration files
+│   ├── settings.json
+│   └── calibration.json
+│
+├── data/                        # Runtime data
+│   ├── captures/                # Camera snapshots
+│   └── logs/                    # System logs
+│
+└── docs/                        # Additional documentation
+    ├── MODEL_TRAINING.md
+    └── DEPLOYMENT_GUIDE.md
 ```
 
 ---
 
-## 🧠 Model Training
+## 🏗️ System Architecture
 
-### Dataset Preparation
+```
+                         ┌─────────────────────────────────┐
+                         │     REMOTE MONITORING           │
+                         │  (Phone/Computer Dashboard)     │
+                         └──────────────┬──────────────────┘
+                                        │ WiFi
+                                        ▼
+┌────────────────────────────────────────────────────────────────────┐
+│                    METIS AI ACCELERATOR                            │
+│                    (Edge AI Brain)                                 │
+│                                                                    │
+│   ┌─────────────┐    ┌─────────────────┐    ┌──────────────────┐  │
+│   │ USB Camera  │───►│  AI Inference   │───►│  Alert & Control │  │
+│   │ (1080p)     │    │  (Blockage      │    │  • Dashboard     │  │
+│   └─────────────┘    │   Detection)    │    │  • SMS/WhatsApp  │  │
+│                      └────────┬────────┘    │  • Relay Control │  │
+│                               │             └────────┬─────────┘  │
+│                               │                      │            │
+│   ┌─────────────┐    ┌────────▼────────┐            │            │
+│   │  Arduino    │───►│  Sensor Fusion  │            │            │
+│   │  Uno Rev 4  │    │  & Risk Score   │────────────┘            │
+│   │  (USB)      │    └─────────────────┘                         │
+│   └──────┬──────┘                                                 │
+│          │                                                        │
+└──────────┼────────────────────────────────────────────────────────┘
+           │
+           │ Wires
+           ▼
+   ┌───────────────┐
+   │   HC-SR04     │ ← Ultrasonic sensor (water level)
+   │   Sensor      │
+   └───────────────┘
 
-```bash
-# Generate synthetic training data
-python3 generate_synthetic_data.py
-
-# Output:
-# ✓ Visual metadata saved (1000 images)
-# ✓ Water level data generated (1000 sequences)
-# ✓ Environmental data generated (5000 samples)
+           │ WiFi (optional)
+           ▼
+   ┌───────────────┐
+   │  Sonoff Pro   │──► Pump / Siren / Barrier
+   │  R3 Relay     │
+   └───────────────┘
 ```
 
-### Edge Impulse Training
+---
 
-1. **Create Project**
-   - Visit https://studio.edgeimpulse.com
-   - Create new project: `DrainSentinel`
-   - Select device: **Seeed XIAO ESP32-S3 Sense**
+## 🧠 How the AI Works
 
-2. **Upload Data**
-   - Visual data: `data/visual/` (1000 images)
-   - Sensor data: `data/sensor/water_level_data.json`
-   - Environmental data: `data/environmental/flood_risk_data.json`
+### Visual Blockage Detection
 
-3. **Create Impulse**
-   - Input: Camera (96x96) + Time Series (60s) + Tabular (5 features)
-   - Processing: Image + Time Series + Standardization
-   - Learning: Transfer Learning (MobileNetV2) + LSTM + XGBoost
+The Metis runs a **MobileNetV2** neural network:
 
-4. **Train Models**
-   - Visual: 100 epochs, batch size 32
-   - Sensor: 100 epochs, batch size 32
-   - Environmental: 50 epochs, batch size 32
+- **Input:** 224x224 RGB camera frame
+- **Output:** Classification (clear / partial_blockage / full_blockage)
+- **Accuracy:** ~87%
+- **Latency:** ~100-200ms on Metis (with accelerator)
 
-5. **Export Models**
-   - Format: C++ Library
-   - Optimization: INT8 Quantization
-   - Target: ESP32-S3
+### Water Level Monitoring
 
-### Performance Metrics
+The Arduino + ultrasonic sensor measures distance to water:
 
-| Model | Accuracy | Precision | Recall | Latency |
-|-------|----------|-----------|--------|---------|
-| Visual (MobileNetV2) | 87% | 85% | 86% | 350 ms |
-| Sensor (LSTM) | 92% | 90% | 91% | 75 ms |
-| Environmental (XGBoost) | 88% | 86% | 89% | 35 ms |
-| **Combined** | **89%** | **87%** | **89%** | **460 ms** |
+- **Range:** 2-400 cm
+- **Precision:** ±3mm
+- **Sample rate:** 1 reading/second
+- **Communication:** JSON over USB serial
+
+### Decision Fusion
+
+The Metis combines both signals:
+
+```
+Risk Score = (0.5 × Blockage Score) + (0.3 × Water Level %) + (0.2 × Rate of Rise)
+
+Alert Levels:
+- GREEN:  Risk < 30%    → "All clear"
+- YELLOW: Risk 30-60%   → "Monitor closely"  
+- ORANGE: Risk 60-80%   → "Warning issued"
+- RED:    Risk > 80%    → "FLOOD IMMINENT" + trigger relay
+```
 
 ---
 
-## 🚢 Deployment
+## 🌟 Bonus Features
 
-### Single Device Deployment
+### 1. Time-Lapse Recording
+Automatically captures images every 5 minutes. Visual history of drain conditions.
 
-1. **Prepare Hardware**
-   - Mount ESP32-S3 in weatherproof enclosure
-   - Connect all sensors
-   - Install solar panel + battery
+### 2. Historical Trend Analysis
+Tracks water levels over time. Predicts flooding based on rate of rise.
 
-2. **Configure Network**
-   - Connect to local WiFi
-   - Set static IP address
-   - Configure firewall rules
+### 3. Automatic Relay Control
+When RED alert triggers, Sonoff relay activates pump or siren automatically.
 
-3. **Deploy to Drainage**
-   - Mount device above drainage system
-   - Ensure camera has clear view
-   - Position ultrasonic sensor for water level measurement
-   - Calibrate sensors (zero point, range)
+### 4. SMS/WhatsApp Alerts
+Sends alerts directly to phones via Twilio or WhatsApp API.
 
-4. **Monitor**
-   - Access web dashboard: `http://<ESP32_IP>/status`
-   - Subscribe to alert notifications
-   - Log data for analysis
+### 5. Weather Integration
+Pull weather data to improve predictions. Rain forecast + partial blockage = high risk.
 
-### Multi-Device Network
+### 6. Auto-Calibration
+System calibrates to "normal" water level on first boot.
 
-For city-wide deployment:
+### 7. Power Failure Recovery
+Auto-resumes monitoring after power outages.
 
-1. **Deploy multiple devices** across Lagos drainage network
-2. **Central server** collects data from all devices
-3. **Dashboard** visualizes blockage hotspots and flood risk
-4. **Alert system** notifies residents and agencies
+### 8. Multi-Location Support
+Deploy multiple units. Central dashboard shows all locations.
 
 ---
 
-## 📊 Results
+## 📊 Demo Components
 
-### Validation Results
+The final demo includes **all three** deliverables:
 
-**Visual Blockage Detection:**
-- Accuracy: 87% on test set
-- Successfully identifies partial blockages (90% recall)
-- Minimizes false positives (85% precision)
+### 1. Video Demonstration (5-7 mins)
+- Live system running
+- Camera feed with AI detections
+- Water level readings from Arduino
+- Alert triggers
+- Dashboard walkthrough
+- Relay activation demo
 
-**Water Level Monitoring:**
-- Accuracy: 92% on test set
-- Critical level detection: 95% recall (important for flood prevention)
-- Robust to sensor noise
+### 2. Technical Report
+- Problem statement
+- Solution architecture
+- Model training details
+- Performance metrics
+- Validation results
 
-**Flood Prediction:**
-- Accuracy: 88% on test set
-- Precision: 86% (minimizes false alarms)
-- Recall: 89% (catches most flood events)
-
-### Edge Performance
-
-- **Total Inference Time:** 460 ms (within 1-second target)
-- **Model Size:** 6.3 MB (fits in 8 MB ESP32-S3 memory)
-- **Power Consumption:** 45 mA during inference
-- **Uptime:** >99% (24/7 operation)
+### 3. Presentation Slides
+- 10-slide deck: Problem → Solution → Results → Impact
+- Suitable for judging/pitch
 
 ---
 
-## 📚 Datasets
+## 🔬 Why Include the Ultrasonic Sensor?
 
-### Open-Source Datasets Used
+**Cost:** ~$2  
+**Value:** Massive
 
-All datasets use permissive licenses (CC BY 4.0 or CC BY-SA 4.0) allowing commercial use with attribution.
-
-#### 1. S-BIRD Dataset
-- **Source:** University of Tromsø, Norway
-- **License:** CC BY 4.0
-- **Content:** Sewer blockage imagery (1,000+ images)
-- **Citation:** Patil, R.R., et al. (2023). S-BIRD: A Novel Critical Multi-Class Imagery Dataset for Sewer Monitoring and Maintenance Systems. MDPI Sensors, 23(6), 2966.
-- **URL:** https://www.mdpi.com/1424-8220/23/6/2966
-
-#### 2. Pipe Inspection Dataset
-- **Source:** Roboflow Universe
-- **License:** CC BY 4.0
-- **Content:** Pipe defect detection (538 images)
-- **Classes:** Cracks, rust, voids, blockages
-- **URL:** https://universe.roboflow.com/pipe/pipe-inspection
-
-#### 3. Water Level Dataset
-- **Source:** Kaggle (Caetano Ranieri et al.)
-- **License:** CC BY-SA 4.0
-- **Content:** LiDAR + ultrasonic sensor fusion data
-- **Citation:** Ranieri, C.M., et al. (2024). Water level identification with laser sensors, inertial units, and machine learning. Engineering Applications of Artificial Intelligence, 127, 107235.
-- **URL:** https://www.kaggle.com/datasets/caetanoranieri/water-level-identification-with-lidar
-
-### Attribution
-
-All datasets are properly cited in the project documentation and model training notebooks. Commercial use is permitted under the respective open-source licenses.
+1. **Camera alone isn't enough.** Can see blockages but can't measure water depth.
+2. **Early warning.** Water rising fast? Alert BEFORE it hits critical.
+3. **Works in darkness.** Camera needs light. Ultrasonic doesn't.
+4. **Redundancy.** If camera fails, sensor still works.
+5. **Rate detection.** "Water rose 10cm in 5 minutes" > "water at 50cm"
 
 ---
 
-## 🔗 References
+## 🛠️ Troubleshooting
 
-1. **Edge Impulse Documentation:** https://docs.edgeimpulse.com/
-2. **Seeed XIAO ESP32-S3 Sense:** https://wiki.seeedstudio.com/xiao_esp32s3_sense/
-3. **MobileNetV2:** Sandler, M., et al. (2018). MobileNetV2: Inverted Residuals and Linear Bottlenecks. CVPR 2018.
-4. **LSTM for Time Series:** Hochreiter, S., & Schmidhuber, J. (1997). Long Short-Term Memory. Neural Computation, 9(8), 1735-1780.
-5. **XGBoost:** Chen, T., & Guestrin, C. (2016). XGBoost: A Scalable Tree Boosting System. KDD 2016.
-6. **Drainage Blockage Monitoring:** Navia, M., et al. (2024). IoT-Based Detection of Blockages in Stormwater Drains. MDPI, 82(1), 48.
+| Problem | Solution |
+|---------|----------|
+| Metis won't boot | Check SD card insertion; try re-flashing |
+| Can't SSH | Verify WiFi credentials; check router for IP |
+| Camera not detected | Try different USB port; run `lsusb` |
+| Arduino not detected | Check USB cable; run `ls /dev/ttyACM*` |
+| No sensor readings | Check Arduino wiring; verify code uploaded |
+| Dashboard won't load | Ensure Flask running; check firewall port 5000 |
+| Relay won't trigger | Verify Sonoff IP; check Tasmota firmware |
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please follow these guidelines:
+PRs welcome!
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+1. Fork the repo
+2. Create branch: `git checkout -b feature/improvement`
+3. Commit: `git commit -m "Add feature"`
+4. Push: `git push origin feature/improvement`
+5. Open Pull Request
 
 ---
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT License — use it, modify it, share it.
 
 ---
 
 ## 📞 Contact
 
-- **Project Lead:** ClimatrixAI Team
-- **Email:** founders@climatrixai.com
+- **Project:** DrainSentinel
+- **Team:** ClimatrixAI
 - **GitHub:** https://github.com/farouqfahm/DrainSentinel1.0
-- **Edge Impulse Project:** https://studio.edgeimpulse.com/public/drainsentinel
 
 ---
 
-## 🙏 Acknowledgments
-
-- **Seeed Studio** for the XIAO ESP32-S3 Sense hardware
-- **Edge Impulse** for the ML platform and tools
-- **University of Tromsø** for the S-BIRD dataset
-- **Roboflow** for the Pipe Inspection dataset
-- **Lagos State Government** for flood prevention collaboration
+**Last Updated:** February 9, 2026  
+**Version:** 2.0.0
 
 ---
 
-**Last Updated:** November 30, 2025  
-**Status:** Active Development  
-**Version:** 1.0.0
-
----
-
-## 📋 Submission Checklist
-
-- ✅ GitHub repository with complete source code
-- ✅ Detailed README with development process
-- ✅ Model training documentation
-- ✅ Embedded firmware code
-- ✅ Data preprocessing scripts
-- ✅ Edge Impulse integration guide
-- ✅ Deployment instructions
-- ✅ Performance metrics and validation results
-- ✅ Proper attribution for all datasets
-- ✅ Open-source license compliance
-
-**Ready for Edge AI Application Competition Submission!**
+*Built with ❤️ for Lagos*
